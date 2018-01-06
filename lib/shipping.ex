@@ -1,0 +1,2 @@
+defmodule Shipping do
+end

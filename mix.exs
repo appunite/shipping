@@ -19,6 +19,8 @@ defmodule Shipping.Mixfile do
 
   defp deps do
     [
+      {:mix_test_watch, "~> 0.5", only: :dev, runtime: false},
+      {:uuid, "~> 1.1"}
     ]
   end
 end

@@ -9,6 +9,8 @@ defmodule Shipping.Shipper.LoadServer do
   alias Shipping.Driver.Events.LoadPickedUp
   alias Shipping.Driver.Events.LoadDelivered
 
+  alias Shipping.PubSub
+
   ## API
 
   def create_load(%CreateLoad{} = command) do
@@ -34,6 +36,10 @@ defmodule Shipping.Shipper.LoadServer do
   def init(%CreateLoad{} = command) do
     {:ok, event} = Shipper.create_load(command)
     load = Load.from_event(event)
+
+    PubSub.subscribe("load_request_sent", self())
+    PubSub.subscribe("load_delivered", self())
+
     {:ok, load}
   end
 

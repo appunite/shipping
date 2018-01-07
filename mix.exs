@@ -13,6 +13,7 @@ defmodule Shipping.Mixfile do
 
   def application do
     [
+      mod: {Shipping.Application, []},
       extra_applications: [:logger]
     ]
   end

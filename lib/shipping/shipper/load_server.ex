@@ -12,15 +12,17 @@ defmodule Shipping.Shipper.LoadServer do
   ## API
 
   def create_load(%CreateLoad{} = command) do
-    GenServer.start_link(__MODULE__, command)
+    GenServer.start_link(__MODULE__, command, name: server_name(command.uuid))
   end
 
-  def get_load_requests(pid) do
-    GenServer.call(pid, :get_load_requests)
+  def get_load_requests(load_uuid) do
+    name = server_name(load_uuid)
+    GenServer.call(name, :get_load_requests)
   end
 
-  def accept_load_request(pid, request_uuid) do
-    GenServer.cast(pid, {:accept_load_request, request_uuid})
+  def accept_load_request(load_uuid, request_uuid) do
+    name = server_name(load_uuid)
+    GenServer.cast(name, {:accept_load_request, request_uuid})
   end
 
   ## CALLBACKS
@@ -58,5 +60,11 @@ defmodule Shipping.Shipper.LoadServer do
     {[], new_load} = Shipper.handle_load_delivery(load, event)
 
     {:noreply, new_load}
+  end
+
+  ## Helpers
+
+  defp server_name(load_uuid) do
+    {:via, Registry, {:load_registry, load_uuid}}
   end
 end

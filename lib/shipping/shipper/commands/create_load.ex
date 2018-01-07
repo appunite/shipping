@@ -1,5 +1,13 @@
 defmodule Shipping.Shipper.Commands.CreateLoad do
-  @fields Shipping.Shipper.Load.fields()
+  @fields [
+    :uuid,
+    :shipper_id,
+    :number_of_trips,
+    :car_type,
+    :start_date_millis,
+    :lat,
+    :lng
+  ]
 
   @enforce_keys @fields
   defstruct @fields

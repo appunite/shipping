@@ -66,6 +66,10 @@ defmodule Shipping.Shipper do
     {events, new_load}
   end
 
+  @doc "Returns list of received load requests"
+  @spec get_load_requests(%Load{}) :: [%LoadRequestSent{}]
+  def get_load_requests(%Load{} = load), do: load.driver_requests
+
   @doc "Accepts a load request from a driver"
   @spec accept_load_request(%Load{}, String.t()) :: {:ok, %LoadRequestAccepted{}}
   def accept_load_request(%Load{} = load, request_uuid) do

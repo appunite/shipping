@@ -12,6 +12,10 @@ defmodule Shipping.Shipper.LoadServer do
   ## API
 
   def create_load(%CreateLoad{} = command) do
+    Supervisor.start_child(Shipping.Shipper.LoadsSupervisor, [command])
+  end
+
+  def start_link(%CreateLoad{} = command) do
     GenServer.start_link(__MODULE__, command, name: server_name(command.uuid))
   end
 

@@ -15,13 +15,11 @@ defmodule Shipping.Driver.LoadStorageTest do
   }
 
   test "stores the load after receiving the event" do
-    LoadStorage.init()
     LoadStorage.store_load(@event)
     assert [%Shipping.Driver.Load{}] = LoadStorage.fetch_all()
   end
 
   test "load can be fetched by uuid" do
-    LoadStorage.init()
     LoadStorage.store_load(@event)
     assert {:ok, %Shipping.Driver.Load{}} = LoadStorage.fetch_by_id(@event.uuid)
   end

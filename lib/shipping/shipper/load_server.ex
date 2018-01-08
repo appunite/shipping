@@ -35,11 +35,13 @@ defmodule Shipping.Shipper.LoadServer do
 
   def init(%CreateLoad{} = command) do
     {:ok, event} = Shipper.create_load(command)
-    load = Load.from_event(event)
+
+    PubSub.publish("load_created", event)
 
     PubSub.subscribe("load_request_sent", self())
     PubSub.subscribe("load_delivered", self())
 
+    load = Load.from_event(event)
     {:ok, load}
   end
 

@@ -3,7 +3,7 @@ defmodule Shipping.Driver.LoadStorage do
   alias Shipping.Driver.Load
 
   def init() do
-    table = :ets.new(:shipper_loads, [:set, :protected, :named_table])
+    table = :ets.new(:shipper_loads, [:set, access(), :named_table])
   end
 
   def store_load(%LoadCreated{} = event) do
@@ -41,5 +41,9 @@ defmodule Shipping.Driver.LoadStorage do
       [{"all", loads}] -> loads
       _ -> []
     end
+  end
+
+  defp access() do
+    if Mix.env() == :test, do: :public, else: :protected
   end
 end

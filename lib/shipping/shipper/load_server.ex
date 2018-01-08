@@ -42,6 +42,9 @@ defmodule Shipping.Shipper.LoadServer do
     PubSub.subscribe("load_delivered", self())
 
     load = Load.from_event(event)
+
+    store_state!(load)
+
     {:ok, load}
   end
 
@@ -59,17 +62,23 @@ defmodule Shipping.Shipper.LoadServer do
   def handle_info(%LoadRequestSent{} = event, load) do
     {[], new_load} = Shipper.handle_load_request(load, event)
 
+    store_state!(new_load)
+
     {:noreply, new_load}
   end
 
   def handle_info(%LoadPickedUp{} = event, load) do
     {[], new_load} = Shipper.handle_load_pickup(load, event)
 
+    store_state!(new_load)
+
     {:noreply, new_load}
   end
 
   def handle_info(%LoadDelivered{} = event, load) do
     {[], new_load} = Shipper.handle_load_delivery(load, event)
+
+    store_state!(new_load)
 
     {:noreply, new_load}
   end
@@ -78,5 +87,11 @@ defmodule Shipping.Shipper.LoadServer do
 
   defp server_name(load_uuid) do
     {:via, Registry, {:load_registry, load_uuid}}
+  end
+
+  defp store_state!(load) do
+    serialized = :erlang.term_to_binary(load)
+    {:ok, file} = File.open("shipper_loads/#{load.uuid}", [:write])
+    IO.binwrite(file, serialized)
   end
 end

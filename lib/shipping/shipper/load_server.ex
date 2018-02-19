@@ -17,8 +17,16 @@ defmodule Shipping.Shipper.LoadServer do
     Supervisor.start_child(Shipping.Shipper.LoadsSupervisor, [command])
   end
 
+  def restore_load(%Load{} = load) do
+    Supervisor.start_child(Shipping.Shipper.LoadsSupervisor, [load])
+  end
+
   def start_link(%CreateLoad{} = command) do
     GenServer.start_link(__MODULE__, command, name: server_name(command.uuid))
+  end
+
+  def start_link(%Load{} = load) do
+    GenServer.start_link(__MODULE__, load, name: server_name(load.uuid))
   end
 
   def get_load_requests(load_uuid) do
@@ -46,6 +54,10 @@ defmodule Shipping.Shipper.LoadServer do
     store_state!(load)
 
     {:ok, load}
+  end
+
+  def init(%Load{} = restored_load) do
+    {:ok, restored_load}
   end
 
   def handle_call(:get_load_requests, _from, load) do

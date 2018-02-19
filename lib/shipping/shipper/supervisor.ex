@@ -10,7 +10,8 @@ defmodule Shipping.Shipper.Supervisor do
   def init(_) do
     children = [
       supervisor(Registry, [:unique, :load_registry]),
-      supervisor(Shipping.Shipper.LoadsSupervisor, [])
+      supervisor(Shipping.Shipper.LoadsSupervisor, []),
+      worker(Shipping.Shipper.LoadRecoveryWorker, [])
     ]
 
     supervise(children, strategy: :one_for_one)
